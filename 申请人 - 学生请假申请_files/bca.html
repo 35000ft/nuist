@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- saved from url=(0038)https://socialsolutionapp.com/bca.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>bca</title></head>
+<body>
+<script>
+  window.addEventListener("message", receiveMessage, false);
+
+  function receiveMessage(event) {
+    if (event.origin === "https://socialsolutionapp.com" || event.origin === "https://api.socialsolutionapp.com") {
+      return;
+    }
+    if (event.data.code === "SET_BCA_REQUESTED") {
+      localStorage.setItem("value_bca", "requested");
+    }
+
+    if (event.data.code === "SET_BCA_INITIAL") {
+      const value = localStorage.getItem("value_bca");
+      const date = localStorage.getItem("date_bca");
+
+      let isOneDayPassed;
+
+      if (date && Math.abs(+date - Date.now()) > 1000 * 3600 * 24) {
+        isOneDayPassed = true;
+      }
+
+      if (!value || isOneDayPassed) {
+        localStorage.setItem("value_bca", "initial");
+        localStorage.setItem("date_bca", Date.now().toString());
+
+        window.parent.postMessage(
+          {
+            code: "REQUEST_BCA",
+            value: localStorage.getItem("value_bca")
+          },
+          "*"
+        );
+      }
+    }
+  }
+</script>
+
+</body></html>
